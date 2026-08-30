@@ -4,19 +4,37 @@ class RouletteSimulator
 {
     static readonly Random rnd = new();
     static readonly int[] betNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+    static decimal totalBalance = 100m;
 
     static void Main()
     {
+        while (true)
+        {
+            Console.WriteLine("Press 'q' to quit or any other key to continue...");
+            if (Console.ReadLine() == "q")
+            { 
+                Console.WriteLine("Exiting...");
+                break;
+            }
+
+            RunGameWithConfig();
+            Console.WriteLine("Game completed. total balance: {0}", totalBalance);
+        }
+    }
+
+    private static void RunGameWithConfig()
+    {
         var config = new Config
         {
-            InitialBalance = 100m,
+            InitialBalance = 10m,
             BaseStake = 2m,
             LossMultiplier = 3m,
-            NumberOfSpins = 100
+            NumberOfSpins = 1000
         };
         Console.WriteLine(config);
 
         decimal balance = config.InitialBalance;
+        totalBalance -= balance;
         decimal baseStake = config.BaseStake;
         decimal mult = config.LossMultiplier;
         int spins = config.NumberOfSpins;
@@ -49,6 +67,7 @@ class RouletteSimulator
         }
 
         Console.WriteLine($"Final balance: {balance}");
+        totalBalance += balance;
     }
 }
 
