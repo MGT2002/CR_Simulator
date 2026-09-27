@@ -4,21 +4,27 @@ class RouletteSimulator
 {
     static readonly Random rnd = new();
     static readonly int[] betNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    static decimal totalBalance = 100m;
+    static decimal totalBalance = 2000M;
+
+    static bool disableLogs = true;
+    static ulong spinCounter = 0;
+    static ulong stakeCounter = 0;
 
     static void Main()
     {
-        while (true)
+        while (totalBalance > 0 && totalBalance < 2000M * 2)
         {
-            Console.WriteLine("Press 'q' to quit or any other key to continue...");
-            if (Console.ReadLine() == "q")
-            {
-                Console.WriteLine("Exiting...");
-                break;
-            }
+            if (!disableLogs)
+                Console.WriteLine("Press 'q' to quit or any other key to continue...");
+            //if (Console.ReadLine() == "q")
+            //{
+            //    Console.WriteLine("Exiting...");
+            //    break;
+            //}
 
-            RunGameWithConfig();
-            Console.WriteLine("Game completed. total balance: {0}", totalBalance);
+            RunGameWithConfig(null);
+            Console.WriteLine("Game completed. total balance: {0} | Total Spin count: {1} | Total Stake count: {2}",
+                totalBalance, spinCounter, stakeCounter);
         }
     }
 
@@ -29,16 +35,16 @@ class RouletteSimulator
             //default config
             config = new Config
             {
-                InitialBalance = 10m,
+                InitialBalance = 2000m,
                 BaseStake = 2m,
-                LossMultiplier = 3m,
-                WinMultiplier = 1.5m,
-                NumberOfSpins = 100000,
-                SkipFirstLossCount = 2,
+                LossMultiplier = 4m,
+                NumberOfSpins = 1_000_000_000,
+                SkipFirstLossCount = 14,
             };
-            config.BreakGameAtBalance = config.InitialBalance * 1.5m;
+            config.BreakGameAtBalance = config.InitialBalance * 2m;
         }
-        Console.WriteLine(config);
+        if (!disableLogs)
+            Console.WriteLine(config);
 
         decimal balance = config.InitialBalance;
         totalBalance -= balance;
@@ -54,35 +60,41 @@ class RouletteSimulator
             if (lossCounter < config.SkipFirstLossCount)
             {
                 currentStake = 0;
-                Console.WriteLine("Set stake to 0 | lossCounter: {0}", lossCounter);
+                if (!disableLogs)
+                    Console.WriteLine("Set stake to 0 | lossCounter: {0}", lossCounter);
             }
             else if (lossCounter == config.SkipFirstLossCount)
             {
                 currentStake = baseStake;
-                Console.WriteLine("Set stake to baseStake | lossCounter: {0}", lossCounter);
+                if (!disableLogs)
+                    Console.WriteLine("Set stake to baseStake | lossCounter: {0}", lossCounter);
             }
-
-            Console.WriteLine($"Spin {i} | Stake: {currentStake} | Balance: {balance}");
+            if (!disableLogs)
+                Console.WriteLine($"Spin {i} | Stake: {currentStake} | Balance: {balance}");
 
             if (balance < currentStake)
             {
-                Console.WriteLine($"Broke at spin {i}. Balance: {balance}");
+                if (!disableLogs)
+                    Console.WriteLine($"Broke at spin {i}. Balance: {balance}");
                 break;
             }
 
             if (balance >= config.BreakGameAtBalance)
             {
-                Console.WriteLine($"Reached break balance at spin {i}. Balance: {balance}");
+                if (!disableLogs)
+                    Console.WriteLine($"Reached break balance at spin {i}. Balance: {balance}");
                 break;
             }
 
             balance -= currentStake;
+            if(currentStake > 0)
+                stakeCounter++;
             int result = rnd.Next(0, 37);
 
             bool win = Array.IndexOf(betNumbers, result) >= 0;
             if (win)
             {
-                balance += currentStake * config.WinMultiplier;
+                balance += currentStake * Config.WinMultiplier;
                 currentStake = baseStake; // reset
                 lossCounter = 0; // reset loss counter
             }
@@ -92,21 +104,26 @@ class RouletteSimulator
                 lossCounter++;
             }
 
-            Console.WriteLine($"Result number: {result} | {(win ? "WIN" : "LOSS")} | Balance: {balance}\n");
+            if (!disableLogs)
+                Console.WriteLine($"Result number: {result} | {(win ? "WIN" : "LOSS")} | Balance: {balance}\n");
+
+            spinCounter++;
         }
 
-        Console.WriteLine($"Final balance: {balance}");
+        if (!disableLogs)
+            Console.WriteLine($"Final balance: {balance}");
         totalBalance += balance;
     }
 }
 
 public record Config()
 {
+    public const decimal WinMultiplier = 1.5m;
+
     public decimal InitialBalance { get; init; }
     public decimal BaseStake { get; init; }
     public decimal LossMultiplier { get; init; }
     public int NumberOfSpins { get; init; }
-    public decimal WinMultiplier { get; init; }
     public int SkipFirstLossCount { get; init; }
     public decimal BreakGameAtBalance { get; set; }
 }
