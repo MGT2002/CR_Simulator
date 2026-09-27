@@ -4,7 +4,7 @@ class RouletteSimulator
 {
     static readonly Random rnd = new();
     static readonly int[] betNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    static decimal totalBalance = 2000M;
+    static decimal totalBalance = 10_000M;
 
     static bool disableLogs = true;
     static ulong spinCounter = 0;
@@ -12,7 +12,7 @@ class RouletteSimulator
 
     static void Main()
     {
-        while (totalBalance > 0 && totalBalance < 2000M * 2)
+        while (totalBalance > 0 && totalBalance < 10_000M * 2)
         {
             if (!disableLogs)
                 Console.WriteLine("Press 'q' to quit or any other key to continue...");
@@ -35,13 +35,13 @@ class RouletteSimulator
             //default config
             config = new Config
             {
-                InitialBalance = 2000m,
+                InitialBalance = 10000m,
                 BaseStake = 2m,
-                LossMultiplier = 4m,
-                NumberOfSpins = 1_000_000_000,
-                SkipFirstLossCount = 14,
+                LossMultiplier = 10m,
+                NumberOfSpins = 100_000_000,
+                SkipFirstLossCount = 15,
             };
-            config.BreakGameAtBalance = config.InitialBalance * 2m;
+            config.BreakGameAtBalance = decimal.MaxValue;
         }
         if (!disableLogs)
             Console.WriteLine(config);
@@ -87,7 +87,7 @@ class RouletteSimulator
             }
 
             balance -= currentStake;
-            if(currentStake > 0)
+            if (currentStake > 0)
                 stakeCounter++;
             int result = rnd.Next(0, 37);
 
@@ -126,4 +126,14 @@ public record Config()
     public int NumberOfSpins { get; init; }
     public int SkipFirstLossCount { get; init; }
     public decimal BreakGameAtBalance { get; set; }
+
+    public static Config WinConfig1 = new()
+    {
+        InitialBalance = 10000m,
+        BaseStake = 2m,
+        LossMultiplier = 10m,
+        NumberOfSpins = 100_000_000,
+        SkipFirstLossCount = 14,
+        BreakGameAtBalance = 10000m * 2m
+    };
 }
