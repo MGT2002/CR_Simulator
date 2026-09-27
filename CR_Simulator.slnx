@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="CR_Simulator/CR_Simulator.csproj" />
+  <Project Path="Tests/Tests.csproj" Id="49431359-96e0-41a2-b929-d96c796cf2af" />
 </Solution>

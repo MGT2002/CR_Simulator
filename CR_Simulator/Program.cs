@@ -22,19 +22,22 @@ class RouletteSimulator
         }
     }
 
-    private static void RunGameWithConfig()
+    public static void RunGameWithConfig(Config? config)
     {
-        var config = new Config
+        if (config == null)
         {
-            InitialBalance = 10m,
-            BaseStake = 2m,
-            LossMultiplier = 3m,
-            WinMultiplier = 1.5m,
-            NumberOfSpins = 100000,
-            SkipFirstLossCount = 2,
-        };
-        config.BreakGameAtBalance = config.InitialBalance * 1.5m;
-
+            //default config
+            config = new Config
+            {
+                InitialBalance = 10m,
+                BaseStake = 2m,
+                LossMultiplier = 3m,
+                WinMultiplier = 1.5m,
+                NumberOfSpins = 100000,
+                SkipFirstLossCount = 2,
+            };
+            config.BreakGameAtBalance = config.InitialBalance * 1.5m;
+        }
         Console.WriteLine(config);
 
         decimal balance = config.InitialBalance;
