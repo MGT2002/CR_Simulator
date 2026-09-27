@@ -3,7 +3,7 @@
 class RouletteSimulator
 {
     static readonly Random rnd = new();
-    static readonly int[] betNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+    static readonly int[] betNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
     static decimal totalBalance = 2000M;
 
     static bool disableLogs = true;
@@ -36,10 +36,10 @@ class RouletteSimulator
             config = new Config
             {
                 InitialBalance = 2000m,
-                BaseStake = 2m,
-                LossMultiplier = 4m,
-                NumberOfSpins = 1_000_000_000,
-                SkipFirstLossCount = 14,
+                BaseStake = 5m,
+                LossMultiplier = 1m,
+                NumberOfSpins = 1_000_000,
+                SkipFirstLossCount = 6,
             };
             config.BreakGameAtBalance = config.InitialBalance * 2m;
         }
@@ -118,7 +118,7 @@ class RouletteSimulator
 
 public record Config()
 {
-    public const decimal WinMultiplier = 1.5m;
+    public const decimal WinMultiplier = 1.2m;
 
     public decimal InitialBalance { get; init; }
     public decimal BaseStake { get; init; }
